@@ -1,42 +1,858 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Synapse Developer Site</title>
-  <style>
-    body {
-      font-family: Arial;
-      max-width: 800px;
-      margin: 40px auto;
-      line-height: 1.6;
-      padding: 20px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synapse Development — AI & Automation Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    h1 {
-      color: #333;
-    }
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #16161f;
+    --surface: #1c1c28;
+    --surface2: #22223a;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0f0f5;
+    --muted: #8888a8;
+    --accent: #7c6bff;
+    --accent2: #a78bfa;
+    --accent3: #38d9a9;
+    --accent4: #f472b6;
+    --glow: rgba(124,107,255,0.15);
+  }
 
-    .links a {
-      margin-right: 15px;
-    }
-  </style>
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  * { position: relative; z-index: 1; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.25rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+  }
+
+  .nav-logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--accent2);
+    letter-spacing: 0.08em;
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 3rem 5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    color: var(--accent3);
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--accent3);
+    display: inline-block;
+  }
+
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(3.5rem, 7vw, 6.5rem);
+    line-height: 1.05;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent4) 60%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-desc {
+    max-width: 560px;
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 3rem;
+  }
+
+  .hero-desc strong {
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 2rem;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent2);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 2rem;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+    transition: all 0.2s;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  /* Floating dots decoration */
+  .hero-deco {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 420px;
+    height: 420px;
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  /* ─── SECTION WRAPPER ─── */
+  section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 6rem 3rem;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 400;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  .section-sub {
+    font-size: 1rem;
+    color: var(--muted);
+    max-width: 500px;
+    line-height: 1.75;
+    margin-bottom: 3.5rem;
+    font-weight: 300;
+  }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0;
+  }
+
+  /* ─── SKILLS GRID ─── */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .skill-card {
+    background: var(--bg2);
+    padding: 2rem 1.75rem;
+    transition: background 0.2s;
+  }
+
+  .skill-card:hover { background: var(--surface); }
+
+  .skill-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+    font-size: 1.2rem;
+  }
+
+  .skill-icon.purple { background: rgba(124,107,255,0.15); }
+  .skill-icon.teal   { background: rgba(56,217,169,0.12); }
+  .skill-icon.pink   { background: rgba(244,114,182,0.12); }
+  .skill-icon.amber  { background: rgba(251,191,36,0.12); }
+
+  .skill-card h3 {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+
+  .skill-card p {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  /* ─── APP SHOWCASE ─── */
+  .app-section { background: var(--bg); }
+
+  .app-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .app-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    background: rgba(56,217,169,0.08);
+    border: 1px solid rgba(56,217,169,0.25);
+    border-radius: 999px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent3);
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+
+  .app-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent3);
+  }
+
+  .app-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+
+  .app-tagline {
+    font-size: 1rem;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 420px;
+    line-height: 1.75;
+  }
+
+  .app-store-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    white-space: nowrap;
+    margin-top: 0.5rem;
+  }
+
+  .app-store-btn:hover {
+    border-color: var(--accent);
+    background: rgba(124,107,255,0.1);
+  }
+
+  /* Screenshots gallery */
+  .screenshots-wrapper {
+    position: relative;
+    overflow: hidden;
+    margin: 0 -3rem;
+    padding: 2rem 3rem;
+  }
+
+  .screenshots-track {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-end;
+    padding-bottom: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface2) transparent;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .screenshots-track::-webkit-scrollbar { height: 4px; }
+  .screenshots-track::-webkit-scrollbar-track { background: transparent; }
+  .screenshots-track::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 2px; }
+
+  .screenshot-frame {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    border-radius: 28px;
+    overflow: hidden;
+    border: 1px solid var(--border2);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease;
+    background: var(--surface);
+  }
+
+  .screenshot-frame:hover { transform: translateY(-6px) scale(1.01); }
+
+  .screenshot-frame.tall {
+    width: 200px;
+    height: 430px;
+  }
+
+  .screenshot-frame.mid {
+    width: 200px;
+    height: 380px;
+  }
+
+  .screenshot-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Screenshot placeholder when no image */
+  .screenshot-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: linear-gradient(160deg, var(--surface) 0%, var(--bg3) 100%);
+    padding: 1.5rem;
+  }
+
+  .placeholder-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgba(124,107,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .placeholder-icon svg {
+    width: 26px;
+    height: 26px;
+    stroke: var(--accent2);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .placeholder-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    text-align: center;
+    letter-spacing: 0.08em;
+    line-height: 1.5;
+    opacity: 0.7;
+  }
+
+  /* ─── APP FEATURES ─── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3.5rem;
+  }
+
+  .feature-card {
+    padding: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg2);
+    transition: all 0.25s;
+  }
+
+  .feature-card:hover {
+    border-color: var(--border2);
+    background: var(--surface);
+  }
+
+  .feature-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+  }
+
+  .feature-card h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+
+  .feature-card p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ─── TECH STACK ─── */
+  .stack-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+  }
+
+  .pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    transition: all 0.2s;
+  }
+
+  .pill:hover {
+    border-color: var(--accent);
+    color: var(--accent2);
+  }
+
+  /* ─── CONTACT / FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    background: var(--bg2);
+  }
+
+  .footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 4rem 3rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: end;
+  }
+
+  .footer-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    color: var(--accent4);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+  }
+
+  .email-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--accent2);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+    transition: border-color 0.2s;
+  }
+
+  .email-link:hover {
+    border-color: var(--accent2);
+  }
+
+  .footer-note {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 0.5rem;
+  }
+
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    opacity: 0.5;
+    text-align: right;
+    line-height: 2;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-8px); }
+  }
+
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .fade-in { animation: fadeUp 0.7s ease both; }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.22s; }
+  .delay-3 { animation-delay: 0.36s; }
+  .delay-4 { animation-delay: 0.52s; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    nav { padding: 1.25rem 1.5rem; }
+    .nav-links { gap: 1.5rem; }
+    .hero, section { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .footer-inner { grid-template-columns: 1fr; }
+    .footer-copy { text-align: left; }
+    .screenshots-wrapper { margin: 0 -1.5rem; padding: 2rem 1.5rem; }
+    .app-header { flex-direction: column; }
+  }
+</style>
 </head>
 <body>
-  <h1>Hello, there</h1>
 
-  <p>
-    Software engineer interested in AI, cloud infrastructure,
-    and full-stack development.
-  </p>
-
-  <h2>Projects</h2>
-
-  <ul>
-    <li>Voice shopping list app</li>
-    <li>AI API proxy service</li>
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">MW.dev</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#apps">Apps</a></li>
+    <li><a href="#contact">Contact</a></li>
   </ul>
+</nav>
 
-  <div class="links">
-    <a href="https://github.com/synapsedevo1">GitHub</a>
+<!-- HERO -->
+<div style="position:relative; overflow:hidden;">
+  <div style="position:absolute;top:20%;right:5%;width:500px;height:500px;background:radial-gradient(ellipse at center,rgba(124,107,255,0.12) 0%,transparent 70%);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:10%;left:10%;width:300px;height:300px;background:radial-gradient(ellipse at center,rgba(56,217,169,0.08) 0%,transparent 70%);pointer-events:none;"></div>
+
+  <div class="hero">
+    <p class="hero-eyebrow fade-in">AI for Everyone</p>
+    <h1 class="fade-in delay-1">Building<br><em>intelligent</em><br>software.</h1>
+    <p class="hero-desc fade-in delay-2">
+      Developer focused on <strong>AI systems</strong> and <strong>automation workflows</strong>. I build tools that make complexity feel simple — from iOS apps to intelligent pipelines.
+    </p>
+    <div class="hero-cta fade-in delay-3">
+      <a href="#apps" class="btn-primary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        View My Apps
+      </a>
+      <a href="#contact" class="btn-ghost">Get in Touch →</a>
+    </div>
   </div>
+</div>
+
+<hr class="divider">
+
+<!-- ABOUT / SKILLS -->
+<section id="about">
+  <p class="section-label">Expertise</p>
+  <h2 class="section-title">What I work with</h2>
+  <p class="section-sub">Combining deep technical skills with a focus on building products people actually use.</p>
+
+  <div class="skills-grid">
+    <div class="skill-card">
+      <div class="skill-icon purple">
+        <svg width="20" height="20" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <h3>AI & Machine Learning</h3>
+      <p>Designing and deploying LLM-powered applications, embeddings, RAG pipelines, and production AI workflows.</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon teal">
+        <svg width="20" height="20" fill="none" stroke="#38d9a9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+      </div>
+      <h3>iOS Development</h3>
+      <p>Native Swift & SwiftUI apps built with clean architecture, polished UI, and optimized for the App Store.</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon pink">
+        <svg width="20" height="20" fill="none" stroke="#f472b6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      </div>
+      <h3>Automation Engineering</h3>
+      <p>End-to-end automation pipelines that reduce manual work — API integrations, bots, scheduled workflows.</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon amber">
+        <svg width="20" height="20" fill="none" stroke="#fbbf24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      </div>
+      <h3>Fast Iteration</h3>
+      <p>From idea to shipped product, I move fast. Solo development experience across the full stack.</p>
+    </div>
+  </div>
+
+  <div style="margin-top:2.5rem;">
+    <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;font-family:'DM Mono',monospace;letter-spacing:0.08em;">TECH STACK</p>
+    <div class="stack-pills">
+      <span class="pill">Swift</span>
+      <span class="pill">SwiftUI</span>
+      <span class="pill">Python</span>
+      <span class="pill">LangChain</span>
+      <span class="pill">OpenAI API</span>
+      <span class="pill">Claude API</span>
+      <span class="pill">Node.js</span>
+      <span class="pill">CoreData</span>
+      <span class="pill">CloudKit</span>
+      <span class="pill">Xcode</span>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- APP SHOWCASE -->
+<section id="apps">
+  <div class="app-header">
+    <div>
+      <span class="app-badge">App Store · iOS</span>
+      <h2 class="app-title">QuickListIOS</h2>
+      <p class="app-tagline">A fast, focused list-making app for iPhone. Capture, organize, and act — without the clutter.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;padding-top:0.5rem;">
+      <a href="#" class="app-store-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.8"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11"/></svg>
+        App Store
+      </a>
+      <a href="#contact" class="app-store-btn" style="opacity:0.7;">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Request Demo
+      </a>
+    </div>
+  </div>
+
+  <!-- SCREENSHOTS -->
+  <div class="screenshots-wrapper">
+    <div class="screenshots-track">
+      <!-- Replace src="" with your actual screenshot paths -->
+      <div class="screenshot-frame tall">
+        <div class="screenshot-placeholder">
+          <div class="placeholder-icon">
+            <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </div>
+          <div class="screenshot-frame tall">
+            <img src="screenshots/homescreen.png" alt="QuickListIOS Home Screen">
+          </div>
+          <span class="placeholder-label">HOME<br>SCREEN</span>
+        </div>
+      </div>
+      <div class="screenshot-frame mid">
+        <div class="screenshot-placeholder">
+          <div class="screenshot-frame tall">
+            <img src="screenshots/settings1.png" alt="QuickListIOS Home Screen">
+          </div>
+          <span class="placeholder-label">SHOPPING-LIST<br>SETTINGS</span>
+        </div>
+      </div>
+      <div class="screenshot-frame tall">
+        <div class="screenshot-placeholder">
+          <div class="screenshot-frame tall">
+            <img src="screenshots/settings2.png" alt="QuickListIOS Home Screen">
+          </div>
+          <span class="placeholder-label">TODO-LIST<br>SETTINGS</span>
+        </div>
+      </div>
+      <div class="screenshot-frame mid">
+        <div class="screenshot-placeholder">
+          <div class="screenshot-frame tall">
+            <img src="screenshots/shopping-list.png" alt="QuickListIOS Home Screen">
+          </div>
+          <span class="placeholder-label">SHOPPING<br>LIST</span>
+        </div>
+      </div>
+      <div class="screenshot-frame tall">
+        <div class="screenshot-placeholder">
+          <div class="screenshot-frame tall">
+            <img src="screenshots/todo-list.png" alt="QuickListIOS Home Screen">
+          </div>
+          <span class="placeholder-label">TODO<br>LIST</span>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:0.75rem;color:var(--muted);margin-top:0.75rem;font-family:'DM Mono',monospace;letter-spacing:0.06em;opacity:0.6;">← SCROLL TO EXPLORE SCREENSHOTS →</p>
+  </div>
+
+  <!-- To add your real screenshots, replace the placeholder divs above with:
+       <div class="screenshot-frame tall">
+         <img src="screenshots/screen1.png" alt="QuickListIOS Home Screen">
+       </div>
+  -->
+
+  <!-- APP FEATURES -->
+  <div class="features-grid">
+    <div class="feature-card">
+      <p class="feature-num">01</p>
+      <h3>Instant capture</h3>
+      <p>Add items to any list in under a second. No friction, no loading — just the thought and it's saved.</p>
+    </div>
+    <div class="feature-card">
+      <p class="feature-num">02</p>
+      <h3>Smart organization</h3>
+      <p>Auto-sort, tags, and priority flags keep your lists ordered without you lifting a finger.</p>
+    </div>
+    <div class="feature-card">
+      <p class="feature-num">03</p>
+      <h3>iCloud sync</h3>
+      <p>Your lists appear instantly across all your Apple devices via CloudKit — always in sync.</p>
+    </div>
+    <div class="feature-card">
+      <p class="feature-num">04</p>
+      <h3>Focused UI</h3>
+      <p>No subscriptions, no social features. Just a beautifully minimal interface that gets out of your way.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CONTACT / FOOTER -->
+<footer id="contact">
+  <div class="footer-inner">
+    <div>
+      <p class="footer-eyebrow">Get in touch</p>
+      <h2 class="footer-title">Questions & Support</h2>
+      <a href="mailto:61-overrun.drawl@icloud.com" class="email-link">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        61-overrun.drawl@icloud.com
+      </a>
+      <p class="footer-note" style="margin-top:1.5rem;">Whether it's a bug, a feature idea, or just saying hello — I read every message.</p>
+    </div>
+    <div class="footer-copy">
+      <p>Synapse Development</p>
+      <p>AI & Automation Developer</p>
+      <p style="margin-top:1rem;opacity:0.4;">© 2026</p>
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>
